@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block main %}
+<div class="input-group mb-3 w-50 mx-auto">
+  <input type="text" class="form-control" placeholder="Book name" aria-label="Book name" aria-describedby="button-addon2">
+  <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+</div>
+<table class="table w-auto mx-auto">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Author</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>The Cat in the Hat</td>
+      <td>Dr. Seuss</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>The Fault in our Stars</td>
+      <td>John Green</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>John</td>
+      <td>Doe</td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

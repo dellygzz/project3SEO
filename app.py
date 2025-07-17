@@ -1,68 +1,59 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import sqlite3
 import os
+import sqlite3
+from dotenv import load_dotenv
+from database import init_database, create_user
+
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Needed for sessions & flash
+app.secret_key = os.environ["SECRET_KEY"]  # Needed for sessions & flash
 
-# Ensure DB is created
-def setup_db():
-    conn = sqlite3.connect("users.db")
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        username = request.form['username'].strip()
         email = request.form['email'].strip()
         password = request.form['password'].strip()
 
-        conn = sqlite3.connect("users.db")
-        cursor = conn.cursor()
-
-        try:
-            cursor.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, password))
-            conn.commit()
+        new_user = create_user(username, password, email)
+        if not new_user:
+            flash("An account with that username or email already exists.", "error")
+        else:
             flash("Account created successfully! You can now log in.", "success")
             return redirect(url_for('login'))
-        except sqlite3.IntegrityError:
-            flash("An account with that email already exists.", "error")
-        finally:
-            conn.close()
 
     return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        username = request.form['username'].strip()
         email = request.form['email'].strip()
         password = request.form['password'].strip()
 
-        conn = sqlite3.connect("users.db")
+        conn = sqlite3.connect("database.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE email = ? AND password = ?", (email, password))
+        cursor.execute("SELECT * FROM users WHERE username = ? AND email = ? AND password = ?", (username, email, password))
         user = cursor.fetchone()
         conn.close()
 
         if user:
-            session['user'] = email
+            session['user'] = username
             return redirect(url_for('dashboard'))
         else:
             flash("Invalid email or password.", "error")
 
     return render_template('login.html')
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -70,12 +61,14 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('dashboard.html', user=session['user'])
 
+
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     flash("You have been logged out.", "info")
     return redirect(url_for('index'))
 
+
 if __name__ == '__main__':
-    setup_db()
+    init_database()
     app.run(debug=True)
