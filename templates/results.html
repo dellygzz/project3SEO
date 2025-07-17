@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Results
+{% endblock %}
+
+{% block main %}
+<h1>Results for "{{ query }}"</h1>
+{% if results %}
+<ul>
+    {% for item in results %}
+    <li>{{ item[0] }} by {{ item[1] }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No results found.</p>
+{% endif %}
+<a href="/dashboard">Return to Dashboard</a>
+{% endblock %}

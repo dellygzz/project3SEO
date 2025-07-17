@@ -11,15 +11,18 @@ def search_book(query):
 
     response = requests.get(url)
     data = response.json()
-    print(data)
+
+    books = []
 
     for item in data.get("items", []):
         volume_info = item["volumeInfo"]
         title = volume_info.get("title")
         authors = volume_info.get("authors", [])
-        print(f"{title} by {', '.join(authors)}")
+        books.append((title, ', '.join(authors)))
+    
+    return books
 
 if __name__ == "__main__":
     query = input("Enter book name: ")
-    search_book(query)
-    
+    books = search_book(query)
+    print(books)
