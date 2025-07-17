@@ -5,7 +5,7 @@ Home
 {% endblock %}
 
 {% block main %}
-<img src="/images/books.png" class="rounded mx-auto d-block" alt="BookSync Logo">
+<img src="{{ url_for('static', filename = 'books.png') }}" class="rounded mx-auto d-block" alt="BookSync Logo">
 <h2>Welcome to <i>your</i> BookSync!</h2>
 <p>
   <b>BookSync</b> is your personal digital bookshelf — a simple and powerful way to track,

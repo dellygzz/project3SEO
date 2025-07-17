@@ -1,74 +1,92 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import os
-import sqlite3
-from dotenv import load_dotenv
-from database import init_database, create_user
-
-
-load_dotenv()
+from database import (init_database, Create_User, Create_Book, Create_User_And_Book, Get_User_Books, Remove_Books_From_User, Session, User, or_, Get_User_By_Identifier)
 
 app = Flask(__name__)
-app.secret_key = os.environ["SECRET_KEY"]  # Needed for sessions & flash
+app.secret_key = 'your_secret_key'  # Needed for sessions & flash
 
+# Ensure DB is created
+def setup_db():
+    init_database()
 
+#======================== AUTH ROUTES =========================
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username'].strip()
-        email = request.form['email'].strip()
-        password = request.form['password'].strip()
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        #one or more fields not filled out
+        if not username or not password or not email:
+            flash("Fill out all fields", "error")
+            return render_template('register.html')
 
-        new_user = create_user(username, password, email)
-        if not new_user:
-            flash("An account with that username or email already exists.", "error")
+        if len(password) < 6:
+            flash("Password must be at least 6 characters long", "error")
+            return render_template('register.html')
+        
+        if '@' not in email:
+            flash("Please enter a valid email", 'error')
+            return render_template('register.html')
+
+        result = Create_User(username, password, email)
+        #result will return "username or email already exists"
+        if isinstance(result, str):
+            flash(result, "Error")
         else:
-            flash("Account created successfully! You can now log in.", "success")
+            flash("Account was created succesfully, go ahead and log in.", "success")
             return redirect(url_for('login'))
 
     return render_template('register.html')
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username'].strip()
-        email = request.form['email'].strip()
+        identifier = request.form['identifier'].strip()
         password = request.form['password'].strip()
 
-        conn = sqlite3.connect("database.db")
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ? AND email = ? AND password = ?", (username, email, password))
-        user = cursor.fetchone()
-        conn.close()
-
-        if user:
-            session['user'] = username
+        user = Get_User_By_Identifier(identifier)
+        if user and user.password == password:
+            session['user_id'] = user.id
+            session['username'] = user.username
+            flash("login succesful!", "success")
             return redirect(url_for('dashboard'))
         else:
-            flash("Invalid email or password.", "error")
+            flash("Invalid username/email/password", "error")
 
     return render_template('login.html')
 
-
-@app.route('/dashboard')
-def dashboard():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('dashboard.html', user=session['user'])
-
-
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
+    session.pop('user_id', None)
     flash("You have been logged out.", "info")
     return redirect(url_for('index'))
+#=================================================================
+
+#============== BOOK ROUTES ======================================
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('dashboard.html')
+
+@app.route('/search_books')
+def search_books():
+    pass
+
+@app.route('/add_book')
+def add_book():
+    pass
+@app.route('/remove_book')
+def remove_book():
+    pass
+
+#=====================================================================
 
 
 if __name__ == '__main__':
-    init_database()
+    setup_db()
     app.run(debug=True)

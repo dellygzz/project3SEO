@@ -14,7 +14,7 @@
 
     <link href="/static/books.png" rel="icon">
 
-    <link href="/static/styles.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
 
     <title>BookSync: {% block title %}{% endblock %}</title>
 </head>
@@ -32,7 +32,7 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a class="nav-link" href="/">Home</a>
-                    {% if 'user' not in session %}
+                    {% if 'user_id' not in session %}
                     <a class="nav-link" href="/login">Login</a>
                     <a class="nav-link" href="/register">Register</a>
                     {% else %}
