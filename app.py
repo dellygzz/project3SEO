@@ -3,6 +3,7 @@ import os
 import sqlite3
 from dotenv import load_dotenv
 from database import init_database, create_user
+from google_books import search_book
 
 
 load_dotenv()
@@ -60,6 +61,16 @@ def dashboard():
     if 'user' not in session:
         return redirect(url_for('login'))
     return render_template('dashboard.html', user=session['user'])
+
+
+@app.route('/search')
+def search():
+    query = request.args.get('q')
+    if query:
+        results = search_book(query)
+    else:
+        results = []
+    return render_template('results.html', query=query, results=results)
 
 
 @app.route('/logout')

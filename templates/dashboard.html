@@ -5,10 +5,13 @@ Dashboard
 {% endblock %}
 
 {% block main %}
-<div class="input-group mb-3 w-50 mx-auto">
-  <input type="text" class="form-control" placeholder="Book name" aria-label="Book name" aria-describedby="button-addon2">
-  <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
-</div>
+<form action="/search" method="get">
+  <div class="input-group mb-3 w-50 mx-auto">
+    <input type="text" name="q" class="form-control" placeholder="Book name" aria-label="Book name"
+      aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+  </div>
+</form>
 <table class="table w-auto mx-auto">
   <thead>
     <tr>
