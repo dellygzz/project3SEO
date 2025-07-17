@@ -1,23 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 import os
+from dotenv import load_dotenv
+from database import init_database
 
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Needed for sessions & flash
+app.secret_key = os.environ["SECRET_KEY"]  # Needed for sessions & flash
 
-# Ensure DB is created
-def setup_db():
-    conn = sqlite3.connect("users.db")
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
 
 @app.route('/')
 def index():
@@ -77,5 +67,5 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    setup_db()
+    init_database()
     app.run(debug=True)

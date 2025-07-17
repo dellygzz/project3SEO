@@ -25,7 +25,7 @@ class Book(base):
     description = Column(String)
     users = relationship("User", secondary = "users_and_books", back_populates = "books")
     
-class User_And_Book(base):
+class UserAndBook(base):
     __tablename__ = "users_and_books"
 
     id = Column(Integer, primary_key = True)
@@ -36,18 +36,18 @@ def init_database():
     base.metadata.create_all(engine)
 
 # CREATE operations of DataBase
-def Create_User(Username, password, email):
+def create_user(username, password, email):
     with Session() as session:
         #check if the user exists already
-        user_exists = session.query(User).filter(or_(User.username == Username, User.email == email)).first() # could also use '|'
+        user_exists = session.query(User).filter(or_(User.username == username, User.email == email)).first() # could also use '|'
         if user_exists:
-            return "username or passwrod already exists"
-        new_user = User(username = Username, password = password, email = email)
+            return "username or password already exists"
+        new_user = User(username = username, password = password, email = email)
         session.add(new_user)
         session.commit()
         return new_user
 
-def Create_Book(google_book_id, title, author, description):
+def create_book(google_book_id, title, author, description):
     with Session() as session:
         #dont allow duplicate books to be made, because the association table handles multiple people wanting the same book
         book_exists = session.query(Book).filter((Book.google_book_id == google_book_id)).first()
@@ -61,7 +61,7 @@ def Create_Book(google_book_id, title, author, description):
         session.commit()
         return new_book
 
-def Create_User_And_Book(user_id, google_book_id, title, author, description):
+def create_user_and_book(user_id, google_book_id, title, author, description):
     with Session() as session:
         user_exists = session.query(User).filter(User.id == user_id).first()
         #check if the user already exists, cuz no point in adding book to a non-existent user
@@ -84,7 +84,7 @@ def Create_User_And_Book(user_id, google_book_id, title, author, description):
         return True
 
 #READ operations of database
-def Get_User_Books(user_id):
+def get_user_books(user_id):
     with Session() as session:
         user_exists = session.query(User).filter(User.id == user_id).first()
         if not user_exists:
@@ -96,7 +96,7 @@ def Get_User_Books(user_id):
         return [{"id" : book.google_book_id, "title" : book.title, "author" : book.author, "description" : book.description} for book in user_exists.books]
 
 #DELETE operations of database
-def Remove_Books_From_User(user_id, google_book_id):
+def remove_books_from_user(user_id, google_book_id):
     with Session() as session:
         user_exists = session.query(User).filter(User.id == user_id).first()
         if not user_exists:
