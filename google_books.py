@@ -24,5 +24,5 @@ def search_book(query):
 
 if __name__ == "__main__":
     query = input("Enter book name: ")
-    books = search_book(query)
-    print(books)
+    results = search_book(query)
+    print(results)

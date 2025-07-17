@@ -1,16 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-<<<<<<< HEAD
 from database import (init_database, Create_User, Create_Book, Create_User_And_Book, Get_User_Books, Remove_Books_From_User, Session, User, or_, Get_User_By_Identifier)
-=======
 import os
-import sqlite3
 from dotenv import load_dotenv
-from database import init_database, create_user
 from google_books import search_book
 
 
 load_dotenv()
->>>>>>> 6d992f13184c32b1852930f7a4ede58f106755ea
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed for sessions & flash
@@ -70,27 +65,7 @@ def login():
 
     return render_template('login.html')
 
-<<<<<<< HEAD
-=======
 
-@app.route('/dashboard')
-def dashboard():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('dashboard.html', user=session['user'])
-
-
-@app.route('/search')
-def search():
-    query = request.args.get('q')
-    if query:
-        results = search_book(query)
-    else:
-        results = []
-    return render_template('results.html', query=query, results=results)
-
-
->>>>>>> 6d992f13184c32b1852930f7a4ede58f106755ea
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
@@ -105,13 +80,20 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('dashboard.html')
 
-@app.route('/search_books')
-def search_books():
-    pass
+@app.route('/search')
+def search():
+    query = request.args.get('q')
+    if query:
+        results = search_book(query)
+    else:
+        results = []
+    return render_template('results.html', query=query, results=results)
+
 
 @app.route('/add_book')
 def add_book():
     pass
+
 @app.route('/remove_book')
 def remove_book():
     pass
