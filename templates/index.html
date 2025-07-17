@@ -1,40 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Home</title>
-  <link rel="stylesheet" href="static/style.css">
-</head>
-<body>
+{% extends "layout.html" %}
 
-  <nav class="navbar">
-    
-    <ul class="nav-links">
-      <div class="navbar-brand">
-        <img src="images/books.png" alt="Company Logo" class="navbar-logo">
-      </div>
-      <li><a href="/">Home</a></li>
-      <li><a href="/about">About</a></li>
-      <li><a href="/login">Login</a></li>
-      <li><a href="/register">Register</a></li>
-    </ul>
-  </nav>
+{% block title %}
+Home
+{% endblock %}
 
-  <h2>Welcome to <i>your</i> BookSync!</h2>
-  <p><b>BookSync</b> is your personal digital bookshelf — a simple and powerful way to track, 
-    organize, and plan all the books you want to read. <br>
-<br>
-  To begin, firstly register an account using the 'Registgit er' button above in the Navigation Bar.<br>
+{% block main %}
+<img src="/static/books.png" class="rounded mx-auto d-block" alt="BookSync Logo">
+<h2>Welcome to <i>your</i> BookSync!</h2>
+<p>
+  <b>BookSync</b> is your personal digital bookshelf — a simple and powerful way to track,
+  organize, and plan all the books you want to read.
+</p>
+<p>
+  To begin, firstly register an account using the 'Register' button above in the Navigation Bar.<br>
   If you already have an account, click log in and enter your credentials.
-<br><br>
-  Once you're logged in, connect your notion account to your BookSync account using the external login.
-
-<br> add any books you have started, and those you've been putting off to your library.
-BookSync will send you periodic reminders on your progrss to make sure your library is up-to-date.
-
-
-  </p>
-
-
-
-</body>
-</html>
+</p>
+{% endblock %}
