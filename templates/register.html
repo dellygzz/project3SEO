@@ -13,7 +13,11 @@ Log In
 {% endwith %}
 <form method="post">
   <div class="mb-3">
-    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="email" name="email" placeholder="Email"
+    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username"
+      type="username" required>
+  </div>
+  <div class="mb-3">
+    <input autocomplete="off" class="form-control mx-auto w-auto" id="email" name="email" placeholder="Email"
       type="email" required>
   </div>
   <div class="mb-3">
@@ -21,8 +25,6 @@ Log In
       required>
   </div>
   <button class="btn btn-primary" type="submit">Register</button>
-  <div>
-  </div>
 </form>
 <br>
 <p><a href="/">Back to Home</a></p>

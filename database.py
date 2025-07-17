@@ -41,7 +41,7 @@ def create_user(username, password, email):
         #check if the user exists already
         user_exists = session.query(User).filter(or_(User.username == username, User.email == email)).first() # could also use '|'
         if user_exists:
-            return "username or password already exists"
+            return None
         new_user = User(username = username, password = password, email = email)
         session.add(new_user)
         session.commit()
