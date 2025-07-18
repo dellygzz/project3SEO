@@ -1,10 +1,8 @@
 import os
-from dotenv import load_dotenv
 
 from notion_client import Client
 from notion_client.helpers import get_id
 
-load_dotenv()
 NOTION_TOKEN = os.getenv("NOTION_TOKEN", "")
 
 # Initialize the client
