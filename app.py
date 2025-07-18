@@ -1,7 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from database import (init_database, create_user, create_user_and_book, get_user_books, remove_books_from_user, get_user_by_identifier)
 import os
 from dotenv import load_dotenv
+from database import (
+    init_database,
+    create_user,
+    create_user_and_book,
+    get_user_books,
+    remove_books_from_user,
+    get_user_by_identifier,
+)
 from google_books import search_book
 from notion import create_database, add_book_to_reading_list
 
@@ -69,12 +76,16 @@ def login():
 
     return render_template("login.html")
 
-@app.route('/logout')
+
+@app.route("/logout")
 def logout():
-    session.pop('user_id', None)
+    session.pop("user_id", None)
     flash("You have been logged out.", "info")
-    return redirect(url_for('index'))
-#=================================================================
+    return redirect(url_for("index"))
+
+
+# =================================================================
+
 
 # ============== BOOK ROUTES ======================================
 @app.route("/dashboard")
@@ -92,53 +103,52 @@ def search():
         results = search_book(query)
     else:
         results = []
-    return render_template('results.html', query=query, results=results)
+    return render_template("results.html", query=query, results=results)
 
-@app.route('/add_book', methods = ['POST'])
+
+@app.route("/add_book", methods=["POST"])
 def add_book():
-    google_book_id = request.form.get('google_book_id')
-    title = request.form.get('title')
-    author = request.form.get('author')
-    description = request.form.get('description', '')
-    
+    google_book_id = request.form.get("google_book_id")
+    title = request.form.get("title")
+    author = request.form.get("author")
+    description = request.form.get("description", "")
+
     if not google_book_id or not title or not author:
-        flash('Missing book information', 'error')
+        flash("Missing book information", "error")
         return redirect(request.referrer)
-    
+
     success = create_user_and_book(
-        session['user_id'], 
-        google_book_id, 
-        title, 
-        author, 
-        description
+        session["user_id"], google_book_id, title, author, description
     )
-    
+
     if success:
-        flash('Book added to your reading list!', 'success')
+        flash("Book added to your reading list!", "success")
     else:
-        flash('Book is already in your reading list or failed to add', 'error')
-    
+        flash("Book is already in your reading list or failed to add", "error")
+
     return redirect(request.referrer)
 
-@app.route("/remove_book", methods = ["POST"])
+
+@app.route("/remove_book", methods=["POST"])
 def remove_book():
-    google_book_id = request.form.get('google_book_id')
-    
+    google_book_id = request.form.get("google_book_id")
+
     if not google_book_id:
-        flash('Invalid book ID', 'error')
+        flash("Invalid book ID", "error")
         return redirect(request.referrer)
-    
-    result = remove_books_from_user(session['user_id'], google_book_id)
-    
+
+    result = remove_books_from_user(session["user_id"], google_book_id)
+
     if result is True:
-        flash('Book removed from your reading list', 'success')
+        flash("Book removed from your reading list", "success")
     else:
-        flash(f'Failed to remove book: {result}', 'error')
-    
+        flash(f"Failed to remove book: {result}", "error")
+
     return redirect(request.referrer)
 
 
 # ============== NOTION ROUTES ======================================
+
 
 @app.route("/create_notion")
 def create_notion():
@@ -151,21 +161,24 @@ def create_notion():
 
     return redirect(url_for("dashboard"))
 
+
 @app.route("/add_notion")
 def add_notion():
     url = request.args.get("url")
     books = get_user_books(session["user_id"])
     for book in books:
-        response = add_book_to_reading_list(url, book["title"], book["author"], book["description"])
+        response = add_book_to_reading_list(
+            url, book["title"], book["author"], book["description"]
+        )
         if not response:
             break
     if not response:
         flash("Error in adding to Notion database", "error")
     else:
         flash("Added to Notion database successfully!", "success")
-    
+
     return redirect(url_for("dashboard"))
-    
+
 
 # =====================================================================
 
