@@ -5,8 +5,11 @@ Results
 {% endblock %}
 
 {% block main %}
+<div class="results-header">
+    <h1>Search Results</h1>
+    <p class="results-subtitle">Found {{ results|length }} books for "{{ query }}"</p>
+</div>
 
-<h1>Results for "{{ query }}"</h1>
 {% if results %}
     <div class="results-container">
         {% for book in results %}
@@ -41,7 +44,13 @@ Results
         {% endfor %}
     </div>
 {% else %}
-    <p>No results found.</p>
+    <div class="no-results">
+        <h2>No books found</h2>
+        <p>Try searching with different keywords or check your spelling.</p>
+    </div>
 {% endif %}
-<a href = "{{ url_for('dashboard') }}" class="btn btn-secondary">Return to Dashboard</a>
+
+<div class="return-button-container">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Return to Dashboard</a>
+</div>
 {% endblock %}

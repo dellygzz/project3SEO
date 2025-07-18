@@ -19,7 +19,7 @@
     <title>BookSync: {% block title %}{% endblock %}</title>
 </head>
 
-<body>
+<body style="min-height: 100vh; display: flex; flex-direction: column;">
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
@@ -30,8 +30,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/">Home</a>
+                <div class = "navbar-nav ms-auto">
                     {% if 'user_id' not in session %}
                     <a class="nav-link" href="/login">Login</a>
                     <a class="nav-link" href="/register">Register</a>
@@ -44,7 +44,7 @@
         </div>
     </nav>
 
-    <main class="container-fluid py-5 text-center">
+    <main class="container-fluid py-5 text-center" style="flex: 1;">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
         <p>{{ message }}</p>
@@ -53,6 +53,10 @@
 
         {% block main %}{% endblock %}
     </main>
+
+    <footer>
+        <p>© 2025 BookSync, Inc. All rights reserved</p>
+    </footer>
 </body>
 
 </html>

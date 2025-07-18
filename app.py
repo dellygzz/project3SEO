@@ -16,7 +16,7 @@ from notion import create_database, add_book_to_reading_list, clear_database
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.environ["SECRET_KEY"]
+app.secret_key = os.environ["GOOGLE_BOOKS_API_KEY"]
 
 
 def setup_db():
@@ -51,7 +51,7 @@ def register():
         result = create_user(username, password, email)
         # result will return "username or email already exists"
         if isinstance(result, str):
-            flash(result, "Error")
+            flash(result, "error")
         else:
             flash("Account was created succesfully, go ahead and log in.", "success")
             return redirect(url_for("login"))
@@ -145,11 +145,9 @@ def remove_book():
         flash(f"Failed to remove book: {result}", "error")
 
     return redirect(request.referrer)
-
+#====================================================================
 
 # ============== NOTION ROUTES ======================================
-
-
 @app.route("/create_notion")
 def create_notion():
     url = request.args.get("url")
@@ -188,7 +186,6 @@ def add_notion():
 
 # =====================================================================
 
-
 if __name__ == "__main__":
     setup_db()
-    app.run(debug=True)
+    app.run()
