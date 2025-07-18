@@ -1,4 +1,6 @@
 import os
+import base64
+import requests
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import (
@@ -18,6 +20,12 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+CLIENT_ID = os.getenv("NOTION_CLIENT_ID")
+CLIENT_SECRET = os.getenv("NOTION_CLIENT_SECRET")
+REDIRECT_URI = os.getenv("NOTION_REDIRECT_URI")
+
+NOTION_TOKEN_URL = "https://api.notion.com/v1/oauth/token"
 
 init_database()
 
@@ -146,10 +154,37 @@ def remove_book():
 #====================================================================
 
 # ============== NOTION ROUTES ======================================
+@app.route("/notion_login")
+def notion_login():
+    auth_url = os.getenv("NOTION_AUTH_URL")
+    return redirect(auth_url)
+
+
+@app.route("/oauth/callback")
+def oauth_callback():
+    code = request.args.get("code")
+    auth_header = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+    headers = {
+        "Authorization": f"Basic {auth_header}",
+        "Content-Type": "application/json",
+    }
+    data = {"grant_type": "authorization_code", "code": code, "redirect_uri": REDIRECT_URI}
+
+    token_response = requests.post(NOTION_TOKEN_URL, headers=headers, json=data)
+    token_json = token_response.json()
+
+    if "access_token" not in token_json:
+        return f"Error getting token: {token_json}", 400
+
+    session["access_token"] = token_json["access_token"]
+    return redirect(url_for("dashboard"))
+
+
 @app.route("/create_notion")
 def create_notion():
     url = request.args.get("url")
-    response = create_database(url, "Reading List")
+    token = session.get("access_token")
+    response = create_database(token, url, "Reading List")
     if response:
         flash("Notion database created successfully!", "success")
     else:
@@ -161,15 +196,16 @@ def create_notion():
 @app.route("/add_notion")
 def add_notion():
     url = request.args.get("url")
+    token = session.get("access_token")
     books = get_user_books(session["user_id"])
 
-    if not clear_database(url):
+    if not clear_database(token, url):
         flash("Invalid URL", "error")
         return redirect(url_for("dashboard"))
 
     for book in books:
         response = add_book_to_reading_list(
-            url, book["title"], book["author"], book["description"]
+            token, url, book["title"], book["author"], book["description"]
         )
         if not response:
             break

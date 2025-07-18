@@ -1,17 +1,12 @@
-import os
-from dotenv import load_dotenv
-
 from notion_client import Client
 from notion_client.helpers import get_id
 
-load_dotenv()
-NOTION_TOKEN = os.getenv("NOTION_TOKEN", "")
-
 # Initialize the client
-notion = Client(auth=NOTION_TOKEN)
 
 
-def create_database(page_url: str, db_name: str) -> dict:
+def create_database(token, page_url: str, db_name: str) -> dict:
+    notion = Client(auth=token)
+
     try:
         parent_id = get_id(page_url)
     except ValueError:
@@ -52,7 +47,9 @@ def create_database(page_url: str, db_name: str) -> dict:
         parent=parent, title=title, properties=properties, icon=icon
     )
 
-def clear_database(database_url):
+def clear_database(token, database_url):
+    notion = Client(auth=token)
+
     try:
         database_id = get_id(database_url)
     except ValueError:
@@ -83,7 +80,9 @@ def clear_database(database_url):
     print("All pages archived successfully!")
     return True
 
-def add_book_to_reading_list(database_url, title, author, description, status="To Read"):
+def add_book_to_reading_list(token, database_url, title, author, description, status="To Read"):
+    notion = Client(auth=token)
+    
     try:
         database_id = get_id(database_url)
     except ValueError:
