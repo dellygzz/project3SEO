@@ -54,8 +54,8 @@ Dashboard
 <h1>Create Notion Database</h1>
 <form action="/create_notion" method="post">
   <div class="input-group mb-3 w-50 mx-auto">
-    <label for="page_id">Select a Notion Page</label>
-    <select class="form-select" name="page_id" id="page_id">
+    <select class="form-select" name="page_id" id="page_id" required>
+      <option value="" disabled selected>Select a Notion Page</option>
       {% for page in pages %}
       <option value="{{ page.id }}">{{ page.title }}</option>
       {% endfor %}
@@ -67,8 +67,8 @@ Dashboard
 <h1>Update Notion Database</h1>
 <form action="/add_notion" method="post">
   <div class="input-group mb-3 w-50 mx-auto">
-    <label for="database_id">Select a Notion Database</label>
-    <select class="form-select" name="database_id" id="database_id">
+    <select class="form-select" name="database_id" id="database_id" required>
+      <option value="" disabled selected>Select a Notion Database</option>
       {% for db in databases %}
       <option value="{{ db.id }}">{{ db.title }}</option>
       {% endfor %}

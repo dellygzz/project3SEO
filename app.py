@@ -205,6 +205,9 @@ def oauth_callback():
 @app.route("/create_notion", methods=["POST"])
 def create_notion():
     page_id = request.form.get("page_id")
+    if not page_id:
+        flash("Please select a valid Notion page.", "error")
+        return redirect(url_for("dashboard"))
     token = session.get("access_token")
     response = create_database(token, page_id, "Reading List")
     if response:
@@ -218,6 +221,9 @@ def create_notion():
 @app.route("/add_notion", methods=["POST"])
 def add_notion():
     database_id = request.form.get("database_id")
+    if not database_id:
+        flash("Please select a valid Notion database.", "error")
+        return redirect(url_for("dashboard"))
     token = session.get("access_token")
     books = get_user_books(session["user_id"])
 
