@@ -52,7 +52,8 @@ def create_database(page_url: str, db_name: str) -> dict:
     )
 
 
-def add_book_to_reading_list(database_id, title, author, status="To Read"):
+def add_book_to_reading_list(database_url, title, author, status="To Read"):
+    database_id = get_id(database_url)
     properties = {
         "Title": {"title": [{"text": {"content": title}}]},
         "Author": {"rich_text": [{"text": {"content": author}}]},
@@ -65,8 +66,8 @@ def add_book_to_reading_list(database_id, title, author, status="To Read"):
 
 
 if __name__ == "__main__":
-    database_id = get_id(input("Database URL: "))
+    database_url = input("Database URL: ")
     title = input("Title: ")
     author = input("Author: ")
-    new_row = add_book_to_reading_list(database_id, title, author)
+    new_row = add_book_to_reading_list(database_url, title, author)
     print(new_row)

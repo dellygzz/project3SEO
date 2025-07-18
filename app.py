@@ -14,7 +14,7 @@ from database import (
 import os
 from dotenv import load_dotenv
 from google_books import search_book
-from notion import create_database
+from notion import create_database, add_book_to_reading_list
 
 
 load_dotenv()
@@ -74,7 +74,7 @@ def login():
         if user and user.password == password:
             session["user_id"] = user.id
             session["username"] = user.username
-            flash("login succesful!", "success")
+            flash("Login successful!", "success")
             return redirect(url_for("dashboard"))
         else:
             flash("Invalid username/email/password", "error")
@@ -132,12 +132,24 @@ def create_notion():
         flash("Notion database created successfully!", "success")
     else:
         flash("Error in creating Notion database", "error")
-        
+
     return redirect(url_for("dashboard"))
 
 @app.route("/add_notion")
 def add_notion():
-    pass
+    url = request.args.get("url")
+    books = get_user_books(session["user_id"])
+    for book in books:
+        response = add_book_to_reading_list(url, book["title"], book["author"])
+        if not response:
+            break
+    if not response:
+        flash("Error in adding to Notion database", "error")
+    else:
+        flash("Added to Notion database successfully!", "success")
+    
+    return redirect(url_for("dashboard"))
+    
 
 # =====================================================================
 
