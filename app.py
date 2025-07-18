@@ -19,8 +19,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
-with app.app_context():
-    init_database()
+init_database()
 
 # ======================== AUTH ROUTES =========================
 @app.route("/")
