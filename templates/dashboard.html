@@ -5,7 +5,8 @@ Dashboard
 {% endblock %}
 
 {% block main %}
-<form action="{{ url_for('search_books') }}" method="get">
+<h1>Dashboard</h1>
+<form action="{{ url_for('search') }}" method="get">
   <div class="input-group mb-3 w-50 mx-auto">
     <input type="text" name="q" class="form-control" placeholder="Book name" aria-label="Book name"
       aria-describedby="button-addon2">
@@ -47,4 +48,23 @@ Dashboard
   <p>Your reading list is empty. Search for books to add them!</p>
 </div>
 {% endif %}
+
+<h1>Create Notion Database</h1>
+<form action="/create_notion" method="get">
+  <div class="input-group mb-3 w-50 mx-auto">
+    <input type="text" name="url" class="form-control" placeholder="Enter page URL" aria-label="Enter page URL"
+    aria-describedby="button-addon3">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon3">Create</button>
+  </div>
+</form>
+
+<h1>Add to Notion Database</h1>
+<form action="/add_notion" method="get">
+  <div class="input-group mb-3 w-50 mx-auto">
+    <input type="text" name="url" class="form-control" placeholder="Enter database URL" aria-label="Enter database URL"
+    aria-describedby="button-addon4">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon4">Create</button>
+  </div>
+</form>
+
 {% endblock %}

@@ -1,68 +1,73 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from database import (init_database, Create_User, Create_Book, Create_User_And_Book, Get_User_Books, Remove_Books_From_User, Session, User, or_, Get_User_By_Identifier)
+from database import (init_database, create_user, create_user_and_book, get_user_books, remove_books_from_user, get_user_by_identifier)
+import os
 from dotenv import load_dotenv
 from google_books import search_book
+from notion import create_database, add_book_to_reading_list
 
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Needed for sessions & flash
+app.secret_key = "your_secret_key"
 
-# Ensure DB is created
+
 def setup_db():
     init_database()
 
-#======================== AUTH ROUTES =========================
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-@app.route('/register', methods=['GET', 'POST'])
+# ======================== AUTH ROUTES =========================
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        email = request.form.get('email', '').strip()
-        password = request.form.get('password', '').strip()
-        #one or more fields not filled out
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "").strip()
+        # one or more fields not filled out
         if not username or not password or not email:
             flash("Fill out all fields", "error")
-            return render_template('register.html')
+            return render_template("register.html")
 
         if len(password) < 6:
             flash("Password must be at least 6 characters long", "error")
-            return render_template('register.html')
-        
-        if '@' not in email:
-            flash("Please enter a valid email", 'error')
-            return render_template('register.html')
+            return render_template("register.html")
 
-        result = Create_User(username, password, email)
-        #result will return "username or email already exists"
+        if "@" not in email:
+            flash("Please enter a valid email", "error")
+            return render_template("register.html")
+
+        result = create_user(username, password, email)
+        # result will return "username or email already exists"
         if isinstance(result, str):
             flash(result, "Error")
         else:
             flash("Account was created succesfully, go ahead and log in.", "success")
-            return redirect(url_for('login'))
+            return redirect(url_for("login"))
 
-    return render_template('register.html')
+    return render_template("register.html")
 
-@app.route('/login', methods=['GET', 'POST'])
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        identifier = request.form['identifier'].strip()
-        password = request.form['password'].strip()
+    if request.method == "POST":
+        identifier = request.form["identifier"].strip()
+        password = request.form["password"].strip()
 
-        user = Get_User_By_Identifier(identifier)
+        user = get_user_by_identifier(identifier)
         if user and user.password == password:
-            session['user_id'] = user.id
-            session['username'] = user.username
-            flash("login succesful!", "success")
-            return redirect(url_for('dashboard'))
+            session["user_id"] = user.id
+            session["username"] = user.username
+            flash("Login successful!", "success")
+            return redirect(url_for("dashboard"))
         else:
             flash("Invalid username/email/password", "error")
 
-    return render_template('login.html')
+    return render_template("login.html")
 
 @app.route('/logout')
 def logout():
@@ -71,15 +76,18 @@ def logout():
     return redirect(url_for('index'))
 #=================================================================
 
-#============== BOOK ROUTES ======================================
-@app.route('/dashboard')
+# ============== BOOK ROUTES ======================================
+@app.route("/dashboard")
 def dashboard():
-    user_books = Get_User_Books(session['user_id'])
-    return render_template('dashboard.html', user_books = user_books)
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    books = get_user_books(session["user_id"])
+    return render_template("dashboard.html", books=books)
 
-@app.route('/search_books')
-def search_books():
-    query = request.args.get('q')
+
+@app.route("/search")
+def search():
+    query = request.args.get("q")
     if query:
         results = search_book(query)
     else:
@@ -97,7 +105,7 @@ def add_book():
         flash('Missing book information', 'error')
         return redirect(request.referrer)
     
-    success = Create_User_And_Book(
+    success = create_user_and_book(
         session['user_id'], 
         google_book_id, 
         title, 
@@ -112,7 +120,7 @@ def add_book():
     
     return redirect(request.referrer)
 
-@app.route('/remove_book', methods = ['POST'])
+@app.route("/remove_book")
 def remove_book():
     google_book_id = request.form.get('google_book_id')
     
@@ -120,7 +128,7 @@ def remove_book():
         flash('Invalid book ID', 'error')
         return redirect(request.referrer)
     
-    result = Remove_Books_From_User(session['user_id'], google_book_id)
+    result = remove_books_from_user(session['user_id'], google_book_id)
     
     if result is True:
         flash('Book removed from your reading list', 'success')
@@ -129,9 +137,39 @@ def remove_book():
     
     return redirect(request.referrer)
 
-#=====================================================================
+
+# ============== NOTION ROUTES ======================================
+
+@app.route("/create_notion")
+def create_notion():
+    url = request.args.get("url")
+    response = create_database(url, "Reading List")
+    if response:
+        flash("Notion database created successfully!", "success")
+    else:
+        flash("Error in creating Notion database", "error")
+
+    return redirect(url_for("dashboard"))
+
+@app.route("/add_notion")
+def add_notion():
+    url = request.args.get("url")
+    books = get_user_books(session["user_id"])
+    for book in books:
+        response = add_book_to_reading_list(url, book["title"], book["author"])
+        if not response:
+            break
+    if not response:
+        flash("Error in adding to Notion database", "error")
+    else:
+        flash("Added to Notion database successfully!", "success")
+    
+    return redirect(url_for("dashboard"))
+    
+
+# =====================================================================
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     setup_db()
     app.run(debug=True)

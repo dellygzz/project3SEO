@@ -15,11 +15,8 @@ while NOTION_TOKEN == "":
 notion = Client(auth=NOTION_TOKEN)
 
 
-def create_database(parent_id: str, db_name: str) -> dict:
-    """
-    parent_id(str): ID of the parent page
-    db_name(str): Title of the database
-    """
+def create_database(page_url: str, db_name: str) -> dict:
+    parent_id = get_id(page_url)
     print(f"\n\nCreate database '{db_name}' in page {parent_id}...")
     properties = {
         "Title": {"title": {}},
@@ -55,7 +52,8 @@ def create_database(parent_id: str, db_name: str) -> dict:
     )
 
 
-def add_book_to_reading_list(database_id, title, author, status="To Read"):
+def add_book_to_reading_list(database_url, title, author, status="To Read"):
+    database_id = get_id(database_url)
     properties = {
         "Title": {"title": [{"text": {"content": title}}]},
         "Author": {"rich_text": [{"text": {"content": author}}]},
@@ -68,8 +66,8 @@ def add_book_to_reading_list(database_id, title, author, status="To Read"):
 
 
 if __name__ == "__main__":
-    database_id = get_id(input("Database URL: "))
+    database_url = input("Database URL: ")
     title = input("Title: ")
     author = input("Author: ")
-    new_row = add_book_to_reading_list(database_id, title, author)
+    new_row = add_book_to_reading_list(database_url, title, author)
     print(new_row)

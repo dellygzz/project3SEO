@@ -7,11 +7,6 @@ Log In
 
 {% block main %}
 <h2>Create an Account</h2>
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% for category, message in messages %}
-<p style="color: red;">{{ message }}</p>
-{% endfor %}
-{% endwith %}
 <form method="post">
   <div class="mb-3">
     <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username"
