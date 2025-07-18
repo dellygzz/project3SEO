@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
 import os
 from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import (
     init_database,
     create_user,
@@ -16,7 +16,7 @@ from notion import create_database, add_book_to_reading_list
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.secret_key = os.environ["SECRET_KEY"]
 
 
 def setup_db():
