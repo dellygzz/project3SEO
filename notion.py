@@ -1,16 +1,9 @@
 from notion_client import Client
 from notion_client.helpers import get_id
 
-# Initialize the client
 
-
-def create_database(token, page_url: str, db_name: str) -> dict:
+def create_database(token, parent_id: str, db_name: str) -> dict:
     notion = Client(auth=token)
-
-    try:
-        parent_id = get_id(page_url)
-    except ValueError:
-        return {}
     
     print(f"\n\nCreate database '{db_name}' in page {parent_id}...")
     properties = {
@@ -47,13 +40,9 @@ def create_database(token, page_url: str, db_name: str) -> dict:
         parent=parent, title=title, properties=properties, icon=icon
     )
 
-def clear_database(token, database_url):
-    notion = Client(auth=token)
 
-    try:
-        database_id = get_id(database_url)
-    except ValueError:
-        return False
+def clear_database(token, database_id):
+    notion = Client(auth=token)
     
     has_more = True
     start_cursor = None
@@ -80,13 +69,38 @@ def clear_database(token, database_url):
     print("All pages archived successfully!")
     return True
 
-def add_book_to_reading_list(token, database_url, title, author, description, status="To Read"):
-    notion = Client(auth=token)
+
+def get_user_pages(access_token):
+    notion = Client(auth=access_token)
+    response = notion.search(filter={"property": "object", "value": "page"})
     
-    try:
-        database_id = get_id(database_url)
-    except ValueError:
-        return None
+    pages = []
+    for result in response["results"]:
+        title = "Untitled"
+        if "properties" in result and "title" in result["properties"]:
+            title_property = result["properties"]["title"]["title"]
+            if title_property:
+                title = title_property[0]["plain_text"]
+        pages.append({"id": result["id"], "title": title})
+    return pages
+
+
+def get_user_databases(access_token):
+    notion = Client(auth=access_token)
+    response = notion.search(filter={"property": "object", "value": "database"})
+    
+    databases = []
+    for result in response["results"]:
+        title = "Untitled"
+        # Databases have a "title" property at the root
+        if "title" in result and result["title"]:
+            title = "".join([t["plain_text"] for t in result["title"]])
+        databases.append({"id": result["id"], "title": title})
+    return databases
+
+
+def add_book_to_reading_list(token, database_id, title, author, description, status="To Read"):
+    notion = Client(auth=token)
     
     properties = {
         "Title": {"title": [{"text": {"content": title}}]},

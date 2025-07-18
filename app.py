@@ -12,12 +12,18 @@ from database import (
     get_user_by_identifier,
 )
 from google_books import search_book
-from notion import create_database, add_book_to_reading_list, clear_database
+from notion import (
+    create_database,
+    add_book_to_reading_list,
+    clear_database,
+    get_user_pages,
+    get_user_databases,
+)
 
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
 CLIENT_ID = os.getenv("NOTION_CLIENT_ID")
 CLIENT_SECRET = os.getenv("NOTION_CLIENT_SECRET")
@@ -26,6 +32,7 @@ REDIRECT_URI = os.getenv("NOTION_REDIRECT_URI")
 NOTION_TOKEN_URL = "https://api.notion.com/v1/oauth/token"
 
 init_database()
+
 
 # ======================== AUTH ROUTES =========================
 @app.route("/")
@@ -84,6 +91,7 @@ def login():
 @app.route("/logout")
 def logout():
     session.pop("user_id", None)
+    session.pop("access_token", None)
     flash("You have been logged out.", "info")
     return redirect(url_for("index"))
 
@@ -96,8 +104,17 @@ def logout():
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
+
     books = get_user_books(session["user_id"])
-    return render_template("dashboard.html", books=books)
+    token = session.get("access_token")
+    if not token:
+        return render_template("dashboard.html", books=books)
+
+    pages = get_user_pages(token)
+    databases = get_user_databases(token)
+    return render_template(
+        "dashboard.html", books=books, pages=pages, databases=databases
+    )
 
 
 @app.route("/search")
@@ -149,7 +166,10 @@ def remove_book():
         flash(f"Failed to remove book: {result}", "error")
 
     return redirect(request.referrer)
-#====================================================================
+
+
+# ====================================================================
+
 
 # ============== NOTION ROUTES ======================================
 @app.route("/notion_login")
@@ -166,7 +186,11 @@ def oauth_callback():
         "Authorization": f"Basic {auth_header}",
         "Content-Type": "application/json",
     }
-    data = {"grant_type": "authorization_code", "code": code, "redirect_uri": REDIRECT_URI}
+    data = {
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": REDIRECT_URI,
+    }
 
     token_response = requests.post(NOTION_TOKEN_URL, headers=headers, json=data)
     token_json = token_response.json()
@@ -178,11 +202,11 @@ def oauth_callback():
     return redirect(url_for("dashboard"))
 
 
-@app.route("/create_notion")
+@app.route("/create_notion", methods=["POST"])
 def create_notion():
-    url = request.args.get("url")
+    page_id = request.args.get("page_id")
     token = session.get("access_token")
-    response = create_database(token, url, "Reading List")
+    response = create_database(token, page_id, "Reading List")
     if response:
         flash("Notion database created successfully!", "success")
     else:
@@ -191,19 +215,19 @@ def create_notion():
     return redirect(url_for("dashboard"))
 
 
-@app.route("/add_notion")
+@app.route("/add_notion", methods=["POST"])
 def add_notion():
-    url = request.args.get("url")
+    database_id = request.args.get("database_id")
     token = session.get("access_token")
     books = get_user_books(session["user_id"])
 
-    if not clear_database(token, url):
+    if not clear_database(token, database_id):
         flash("Invalid URL", "error")
         return redirect(url_for("dashboard"))
 
     for book in books:
         response = add_book_to_reading_list(
-            token, url, book["title"], book["author"], book["description"]
+            token, database_id, book["title"], book["author"], book["description"]
         )
         if not response:
             break

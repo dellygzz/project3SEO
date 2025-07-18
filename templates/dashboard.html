@@ -36,7 +36,8 @@ Dashboard
       <td>
         <form method="POST" action="{{ url_for('remove_book') }}" class="d-inline">
           <input type="hidden" name="google_book_id" value="{{ book['google_book_id'] }}">
-          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove this book?')">Remove</button>
+          <button type="submit" class="btn btn-danger btn-sm"
+            onclick="return confirm('Are you sure you want to remove this book?')">Remove</button>
         </form>
       </td>
     </tr>
@@ -49,23 +50,33 @@ Dashboard
 </div>
 {% endif %}
 
+{% if "access_token" in session" %}
 <h1>Create Notion Database</h1>
-<form action="/create_notion" method="get">
+<form action="/create_notion" method="post">
   <div class="input-group mb-3 w-50 mx-auto">
-    <input type="text" name="url" class="form-control" placeholder="Enter page URL" aria-label="Enter page URL"
-    aria-describedby="button-addon3">
-    <button class="btn btn-outline-secondary" type="submit" id="button-addon3">Create</button>
+    <label for="page_id">Select a Notion Page</label>
+    <select class="form-select" name="page_id" id="page_id">
+      {% for page in pages %}
+      <option value="{{ page.id }}">{{ page.title }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-secondary" type="submit">Create</button>
   </div>
 </form>
 
 <h1>Update Notion Database</h1>
-<form action="/add_notion" method="get">
+<form action="/add_notion" method="post">
   <div class="input-group mb-3 w-50 mx-auto">
-    <input type="text" name="url" class="form-control" placeholder="Enter database URL" aria-label="Enter database URL"
-    aria-describedby="button-addon4">
-    <button class="btn btn-outline-secondary" type="submit" id="button-addon4">Update</button>
+    <label for="database_id">Select a Notion Database</label>
+    <select class="form-select" name="database_id" id="database_id">
+      {% for db in databases %}
+      <option value="{{ db.id }}">{{ db.title }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-secondary" type="submit">Update</button>
   </div>
 </form>
-
+{% else %}
 <a href="{{ url_for('notion_login') }}"><button class="btn btn-primary">Connect to Notion</button></a>
+{% endif %}
 {% endblock %}
