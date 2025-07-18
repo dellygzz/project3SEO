@@ -10,7 +10,7 @@ from database import (
     get_user_by_identifier,
 )
 from google_books import search_book
-from notion import create_database, add_book_to_reading_list
+from notion import create_database, add_book_to_reading_list, clear_database
 
 
 load_dotenv()
@@ -166,12 +166,18 @@ def create_notion():
 def add_notion():
     url = request.args.get("url")
     books = get_user_books(session["user_id"])
+
+    if not clear_database(url):
+        flash("Invalid URL", "error")
+        return redirect(url_for("dashboard"))
+
     for book in books:
         response = add_book_to_reading_list(
             url, book["title"], book["author"], book["description"]
         )
         if not response:
             break
+
     if not response:
         flash("Error in adding to Notion database", "error")
     else:
