@@ -12,6 +12,7 @@ Dashboard
     <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
   </div>
 </form>
+{% if books %}
 <table class="table w-auto mx-auto">
   <thead>
     <tr>
@@ -21,21 +22,16 @@ Dashboard
     </tr>
   </thead>
   <tbody>
+    {% for book in books %}
     <tr>
-      <th scope="row">1</th>
-      <td>The Cat in the Hat</td>
-      <td>Dr. Seuss</td>
+      <th scope="row">{{ loop.index }}</th>
+      <td>{{ book['title'] }}</td>
+      <td>{{ book['author'] }}</td>
     </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>The Fault in our Stars</td>
-      <td>John Green</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>John</td>
-      <td>Doe</td>
-    </tr>
+    {% endfor %}
   </tbody>
 </table>
+{% else %}
+<p>No books added.</p>
+{% endif %}
 {% endblock %}

@@ -96,7 +96,8 @@ def logout():
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
-    return render_template("dashboard.html")
+    books = get_user_books(session["user_id"])
+    return render_template("dashboard.html", books=books)
 
 
 @app.route("/search")
@@ -111,8 +112,9 @@ def search():
 
 @app.route("/add_book")
 def add_book():
+    title = request.args.get("title")
+    author = request.args.get("author")
     pass
-
 
 @app.route("/remove_book")
 def remove_book():
