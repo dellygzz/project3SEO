@@ -7,10 +7,6 @@ from notion_client.helpers import get_id
 load_dotenv()
 NOTION_TOKEN = os.getenv("NOTION_TOKEN", "")
 
-while NOTION_TOKEN == "":
-    print("NOTION_TOKEN not found.")
-    NOTION_TOKEN = input("Enter your integration token: ").strip()
-
 # Initialize the client
 notion = Client(auth=NOTION_TOKEN)
 
