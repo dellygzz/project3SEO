@@ -7,11 +7,31 @@ Results
 {% block main %}
 <h1>Results for "{{ query }}"</h1>
 {% if results %}
-<ul>
-    {% for item in results %}
-    <li>{{ item[0] }} by {{ item[1] }}</li>
-    {% endfor %}
-</ul>
+<table class="table w-auto mx-auto">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for title, author in results %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ title }}</td>
+            <td>{{ author }}</td>
+            <td>
+                <a href="{{ url_for('add_book', title=title, author=author) }}" class="btn btn-primary btn-sm">
+                    Add
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
 {% else %}
 <p>No results found.</p>
 {% endif %}
