@@ -17,11 +17,10 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
-
-def setup_db():
+with app.app_context():
     init_database()
-
 
 # ======================== AUTH ROUTES =========================
 @app.route("/")
@@ -187,5 +186,4 @@ def add_notion():
 # =====================================================================
 
 if __name__ == "__main__":
-    setup_db()
     app.run()
