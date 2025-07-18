@@ -15,7 +15,7 @@ Dashboard
 </form>
 
 <h2>Your Reading List</h2>
-{% if user_books %}
+{% if books %}
 <table class="table w-auto mx-auto">
   <thead>
     <tr>
@@ -27,12 +27,12 @@ Dashboard
     </tr>
   </thead>
   <tbody>
-    {% for book in user_books %}
+    {% for book in books %}
     <tr>
       <th scope="row">{{ loop.index }}</th>
-      <td>{{ book.title }}</td>
-      <td>{{ book.author }}</td>
-      <td>{{ book.description[:100] }}{% if book.description|length > 100 %}...{% endif %}</td>
+      <td>{{ book["title"] }}</td>
+      <td>{{ book["author"] }}</td>
+      <td>{{ book["description"][:100] }}{% if book["description"]|length > 100 %}...{% endif %}</td>
       <td>
         <form method="POST" action="{{ url_for('remove_book') }}" class="d-inline">
           <input type="hidden" name="google_book_id" value="{{ book.id }}">
