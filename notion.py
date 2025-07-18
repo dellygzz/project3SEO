@@ -16,11 +16,16 @@ notion = Client(auth=NOTION_TOKEN)
 
 
 def create_database(page_url: str, db_name: str) -> dict:
-    parent_id = get_id(page_url)
+    try:
+        parent_id = get_id(page_url)
+    except ValueError:
+        return {}
+    
     print(f"\n\nCreate database '{db_name}' in page {parent_id}...")
     properties = {
         "Title": {"title": {}},
         "Author": {"rich_text": {}},
+        "Description": {"rich_text": {}},
         "Status": {
             "select": {
                 "options": [
@@ -52,22 +57,19 @@ def create_database(page_url: str, db_name: str) -> dict:
     )
 
 
-def add_book_to_reading_list(database_url, title, author, status="To Read"):
-    database_id = get_id(database_url)
+def add_book_to_reading_list(database_url, title, author, description, status="To Read"):
+    try:
+        database_id = get_id(database_url)
+    except ValueError:
+        return None
+    
     properties = {
         "Title": {"title": [{"text": {"content": title}}]},
         "Author": {"rich_text": [{"text": {"content": author}}]},
+        "Description": {"rich_text": [{"text": {"content": description}}]},
         "Status": {"select": {"name": status}},
     }
 
     return notion.pages.create(
         parent={"database_id": database_id}, properties=properties
     )
-
-
-if __name__ == "__main__":
-    database_url = input("Database URL: ")
-    title = input("Title: ")
-    author = input("Author: ")
-    new_row = add_book_to_reading_list(database_url, title, author)
-    print(new_row)

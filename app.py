@@ -156,7 +156,7 @@ def add_notion():
     url = request.args.get("url")
     books = get_user_books(session["user_id"])
     for book in books:
-        response = add_book_to_reading_list(url, book["title"], book["author"])
+        response = add_book_to_reading_list(url, book["title"], book["author"], book["description"])
         if not response:
             break
     if not response:
