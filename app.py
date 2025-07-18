@@ -14,6 +14,7 @@ from database import (
 import os
 from dotenv import load_dotenv
 from google_books import search_book
+from notion import create_database
 
 
 load_dotenv()
@@ -125,7 +126,14 @@ def remove_book():
 
 @app.route("/create_notion")
 def create_notion():
-    pass
+    url = request.args.get("url")
+    response = create_database(url, "Reading List")
+    if response:
+        flash("Notion database created successfully!", "success")
+    else:
+        flash("Error in creating Notion database", "error")
+        
+    return redirect(url_for("dashboard"))
 
 @app.route("/add_notion")
 def add_notion():

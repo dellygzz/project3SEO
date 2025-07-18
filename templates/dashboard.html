@@ -36,18 +36,20 @@ Dashboard
 <p>No books added.</p>
 {% endif %}
 <h1>Create Notion Database</h1>
-<form action="/search" method="get">
+<form action="/create_notion" method="get">
   <div class="input-group mb-3 w-50 mx-auto">
-    <input type="text" name="url" class="form-control" placeholder="Enter page URL" aria-label="Enter page URL">
-    <button class="btn btn-outline-secondary" type="submit">Create</button>
+    <input type="text" name="url" class="form-control" placeholder="Enter page URL" aria-label="Enter page URL"
+    aria-describedby="button-addon3">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon3">Create</button>
   </div>
 </form>
 
 <h1>Add to Notion Database</h1>
-<form action="/search" method="get">
+<form action="/add_notion" method="get">
   <div class="input-group mb-3 w-50 mx-auto">
-    <input type="text" name="url" class="form-control" placeholder="Enter database URL" aria-label="Enter database URL">
-    <button class="btn btn-outline-secondary" type="submit">Create</button>
+    <input type="text" name="url" class="form-control" placeholder="Enter database URL" aria-label="Enter database URL"
+    aria-describedby="button-addon4">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon4">Create</button>
   </div>
 </form>
 

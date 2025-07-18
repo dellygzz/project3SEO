@@ -15,11 +15,8 @@ while NOTION_TOKEN == "":
 notion = Client(auth=NOTION_TOKEN)
 
 
-def create_database(parent_id: str, db_name: str) -> dict:
-    """
-    parent_id(str): ID of the parent page
-    db_name(str): Title of the database
-    """
+def create_database(page_url: str, db_name: str) -> dict:
+    parent_id = get_id(page_url)
     print(f"\n\nCreate database '{db_name}' in page {parent_id}...")
     properties = {
         "Title": {"title": {}},
