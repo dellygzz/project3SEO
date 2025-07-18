@@ -1,16 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-<<<<<<< HEAD
 from database import (init_database, Create_User, Create_Book, Create_User_And_Book, Get_User_Books, Remove_Books_From_User, Session, User, or_, Get_User_By_Identifier)
-=======
-import os
-import sqlite3
 from dotenv import load_dotenv
-from database import init_database, create_user
 from google_books import search_book
 
 
 load_dotenv()
->>>>>>> 6d992f13184c32b1852930f7a4ede58f106755ea
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed for sessions & flash
@@ -70,27 +64,6 @@ def login():
 
     return render_template('login.html')
 
-<<<<<<< HEAD
-=======
-
-@app.route('/dashboard')
-def dashboard():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('dashboard.html', user=session['user'])
-
-
-@app.route('/search')
-def search():
-    query = request.args.get('q')
-    if query:
-        results = search_book(query)
-    else:
-        results = []
-    return render_template('results.html', query=query, results=results)
-
-
->>>>>>> 6d992f13184c32b1852930f7a4ede58f106755ea
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
@@ -101,20 +74,60 @@ def logout():
 #============== BOOK ROUTES ======================================
 @app.route('/dashboard')
 def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    return render_template('dashboard.html')
+    user_books = Get_User_Books(session['user_id'])
+    return render_template('dashboard.html', user_books = user_books)
 
 @app.route('/search_books')
 def search_books():
-    pass
+    query = request.args.get('q')
+    if query:
+        results = search_book(query)
+    else:
+        results = []
+    return render_template('results.html', query=query, results=results)
 
-@app.route('/add_book')
+@app.route('/add_book', methods = ['POST'])
 def add_book():
-    pass
-@app.route('/remove_book')
+    google_book_id = request.form.get('google_book_id')
+    title = request.form.get('title')
+    author = request.form.get('author')
+    description = request.form.get('description', '')
+    
+    if not google_book_id or not title or not author:
+        flash('Missing book information', 'error')
+        return redirect(request.referrer)
+    
+    success = Create_User_And_Book(
+        session['user_id'], 
+        google_book_id, 
+        title, 
+        author, 
+        description
+    )
+    
+    if success:
+        flash('Book added to your reading list!', 'success')
+    else:
+        flash('Book is already in your reading list or failed to add', 'error')
+    
+    return redirect(request.referrer)
+
+@app.route('/remove_book', methods = ['POST'])
 def remove_book():
-    pass
+    google_book_id = request.form.get('google_book_id')
+    
+    if not google_book_id:
+        flash('Invalid book ID', 'error')
+        return redirect(request.referrer)
+    
+    result = Remove_Books_From_User(session['user_id'], google_book_id)
+    
+    if result is True:
+        flash('Book removed from your reading list', 'success')
+    else:
+        flash(f'Failed to remove book: {result}', 'error')
+    
+    return redirect(request.referrer)
 
 #=====================================================================
 

@@ -5,37 +5,46 @@ Dashboard
 {% endblock %}
 
 {% block main %}
-<form action="/search" method="get">
+<form action="{{ url_for('search_books') }}" method="get">
   <div class="input-group mb-3 w-50 mx-auto">
     <input type="text" name="q" class="form-control" placeholder="Book name" aria-label="Book name"
       aria-describedby="button-addon2">
     <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
   </div>
 </form>
+
+<h2>Your Reading List</h2>
+{% if user_books %}
 <table class="table w-auto mx-auto">
   <thead>
     <tr>
       <th scope="col">#</th>
       <th scope="col">Title</th>
       <th scope="col">Author</th>
+      <th scope="col">Description</th>
+      <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
+    {% for book in user_books %}
     <tr>
-      <th scope="row">1</th>
-      <td>The Cat in the Hat</td>
-      <td>Dr. Seuss</td>
+      <th scope="row">{{ loop.index }}</th>
+      <td>{{ book.title }}</td>
+      <td>{{ book.author }}</td>
+      <td>{{ book.description[:100] }}{% if book.description|length > 100 %}...{% endif %}</td>
+      <td>
+        <form method="POST" action="{{ url_for('remove_book') }}" class="d-inline">
+          <input type="hidden" name="google_book_id" value="{{ book.id }}">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove this book?')">Remove</button>
+        </form>
+      </td>
     </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>The Fault in our Stars</td>
-      <td>John Green</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>John</td>
-      <td>Doe</td>
-    </tr>
+    {% endfor %}
   </tbody>
 </table>
+{% else %}
+<div class="text-center">
+  <p>Your reading list is empty. Search for books to add them!</p>
+</div>
+{% endif %}
 {% endblock %}

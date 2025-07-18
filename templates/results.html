@@ -5,15 +5,43 @@ Results
 {% endblock %}
 
 {% block main %}
+
 <h1>Results for "{{ query }}"</h1>
 {% if results %}
-<ul>
-    {% for item in results %}
-    <li>{{ item[0] }} by {{ item[1] }}</li>
-    {% endfor %}
-</ul>
+    <div class="results-container">
+        {% for book in results %}
+        <div class="book-card">
+            <div class="book-image">
+                {% if book.thumbnail %}
+                    <img src="{{ book.thumbnail }}" alt="{{ book.title }} cover" class="book-cover">
+                {% else %}
+                    <div class="no-image">No Image Available</div>
+                {% endif %}
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <p class="book-author">by {{ book.author }}</p>
+                {% if book.page_count %}
+                    <p class="book-meta">{{ book.page_count }} pages</p>
+                {% endif %}
+                {% if book.description %}
+                    <p class="book-description">{{ book.description[:150] }}{% if book.description|length > 150 %}...{% endif %}</p>
+                {% endif %}
+                <div class="book-actions">
+                    <form method="POST" action="{{ url_for('add_book') }}" class="add-book-form">
+                        <input type="hidden" name="google_book_id" value="{{ book.google_book_id }}">
+                        <input type="hidden" name="title" value="{{ book.title }}">
+                        <input type="hidden" name="author" value="{{ book.author }}">
+                        <input type="hidden" name="description" value="{{ book.description }}">
+                        <button type="submit" class="btn btn-primary">Add to Reading List</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 {% else %}
-<p>No results found.</p>
+    <p>No results found.</p>
 {% endif %}
-<a href="/dashboard">Return to Dashboard</a>
+<a href = "{{ url_for('dashboard') }}" class="btn btn-secondary">Return to Dashboard</a>
 {% endblock %}
