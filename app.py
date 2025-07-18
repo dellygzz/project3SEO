@@ -204,7 +204,7 @@ def oauth_callback():
 
 @app.route("/create_notion", methods=["POST"])
 def create_notion():
-    page_id = request.args.get("page_id")
+    page_id = request.form.get("page_id")
     token = session.get("access_token")
     response = create_database(token, page_id, "Reading List")
     if response:
@@ -217,7 +217,7 @@ def create_notion():
 
 @app.route("/add_notion", methods=["POST"])
 def add_notion():
-    database_id = request.args.get("database_id")
+    database_id = request.form.get("database_id")
     token = session.get("access_token")
     books = get_user_books(session["user_id"])
 
