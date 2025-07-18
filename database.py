@@ -93,7 +93,7 @@ def get_user_books(user_id):
             #return an empty list, since 
             return []
         #use list comprehension to return the details we want
-        return [{"id" : book.google_book_id, "title" : book.title, "author" : book.author, "description" : book.description} for book in user_exists.books]
+        return [{"google_book_id" : book.google_book_id, "title" : book.title, "author" : book.author, "description" : book.description} for book in user_exists.books]
 
 def get_user_by_id(user_id):
     #get the user by their ID

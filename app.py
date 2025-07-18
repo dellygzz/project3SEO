@@ -120,7 +120,7 @@ def add_book():
     
     return redirect(request.referrer)
 
-@app.route("/remove_book")
+@app.route("/remove_book", methods = ["POST"])
 def remove_book():
     google_book_id = request.form.get('google_book_id')
     
