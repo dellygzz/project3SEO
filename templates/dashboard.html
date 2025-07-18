@@ -51,7 +51,7 @@ Dashboard
 {% endif %}
 
 {% if "access_token" in session %}
-<h1>Create Notion Database</h1>
+<h3>Create Notion Database</h3>
 <form action="/create_notion" method="post">
   <div class="input-group mb-3 w-50 mx-auto">
     <select class="form-select" name="page_id" id="page_id" required>
@@ -64,7 +64,7 @@ Dashboard
   </div>
 </form>
 
-<h1>Update Notion Database</h1>
+<h3>Update Notion Database</h3>
 <form action="/add_notion" method="post">
   <div class="input-group mb-3 w-50 mx-auto">
     <select class="form-select" name="database_id" id="database_id" required>

@@ -64,7 +64,7 @@ def register():
         if isinstance(result, str):
             flash(result, "error")
         else:
-            flash("Account was created succesfully, go ahead and log in.", "success")
+            flash("Account was created successfully, go ahead and log in.", "success")
             return redirect(url_for("login"))
 
     return render_template("register.html")
