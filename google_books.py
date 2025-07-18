@@ -1,8 +1,6 @@
 import os
-from dotenv import load_dotenv
 import requests
 
-load_dotenv()
 
 api_key = os.getenv("GOOGLE_BOOKS_API_KEY")
 

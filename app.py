@@ -15,8 +15,6 @@ from google_books import search_book
 from notion import create_database, add_book_to_reading_list, clear_database
 
 
-load_dotenv()
-
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
