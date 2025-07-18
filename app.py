@@ -121,6 +121,16 @@ def remove_book():
     pass
 
 
+# ============== NOTION ROUTES ======================================
+
+@app.route("/create_notion")
+def create_notion():
+    pass
+
+@app.route("/add_notion")
+def add_notion():
+    pass
+
 # =====================================================================
 
 
