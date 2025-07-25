@@ -1,0 +1,7 @@
+<form action="{{ url_for('find_libraries') }}" method="POST">
+    <input type="hidden" name="title" value="{{ query }}">
+    <label for="zip">Enter your ZIP code:</label>
+    <input type="text" name="zip" required>
+    <button type="submit">Find Nearby Libraries</button>
+</form>
+
