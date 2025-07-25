@@ -37,7 +37,14 @@ def search_book(query, max_results = 20):
                     image_links.get("medium"))
         
         page_count = volume_info.get("pageCount")
-        
+
+        isbn = None
+        for identifier in volume_info.get("industryIdentifiers", []):
+            if identifier["type"] in ["ISBN_13", "ISBN_10"]:
+                isbn = identifier["identifier"]
+                break
+            
+                    
         book_data = {
             'google_book_id': google_book_id,
             'title': title,
