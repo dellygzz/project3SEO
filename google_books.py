@@ -44,6 +44,7 @@ def search_book(query, max_results = 20):
                 isbn = identifier["identifier"]
                 break
             
+            
                     
         book_data = {
             'google_book_id': google_book_id,
