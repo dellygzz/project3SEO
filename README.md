@@ -12,7 +12,9 @@ _No setup required — just register and start tracking your books._
 
 
 ## Features:
-
+- Book Library Locator- Locate if a desired book is available for checkout in a local library
+- Book Recommendations- 
+- Book Purchase Options- 
 - Book Search — Fetch titles, authors, and cover images using the Google Books API
 - Reading Log — Add, Read, and Delete books using a Flask and SQLite backend
 - Notion Export — Automatically export book details to a Notion database via the Notion API
