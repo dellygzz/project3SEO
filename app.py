@@ -19,6 +19,7 @@ from notion import (
     get_user_pages,
     get_user_databases,
 )
+from worldcat import get_oclc_number
 
 
 app = Flask(__name__)
@@ -167,7 +168,38 @@ def remove_book():
 
     return redirect(request.referrer)
 
+@app.route("/find_libraries", methods=["POST"])
+def find_libraries():
+    title = request.form.get("title")
+    zip_code = request.form.get("zip")
 
+    if not title or not zip_code:
+        flash("Please provide both book title and ZIP code.", "error")
+        return redirect(request.referrer or url_for("dashboard"))
+
+    books = search_book(title)
+    if not books:
+        flash("No books found with that title.", "error")
+        return redirect(request.referrer or url_for("dashboard"))
+
+    book = books[0]
+
+    isbn = book.get("isbn")
+    if not isbn:
+        flash("ISBN not found for this book.", "error")
+        return redirect(request.referrer or url_for("dashboard"))
+
+    oclc = get_oclc_number(isbn)
+    if not oclc:
+        flash("OCLC number not found for this ISBN.", "error")
+        return redirect(request.referrer or url_for("dashboard"))
+
+
+    title_slug = book["title"].replace(" ", "-").lower()
+
+
+    worldcat_url = f"https://www.worldcat.org/title/{title_slug}/oclc/{oclc}?loc={zip_code}"
+    return redirect(worldcat_url)
 # ====================================================================
 
 
