@@ -6,15 +6,15 @@
 
 ## Live Demo:
 
-[Try it here on PythonAnywhere](https://booksync.pythonanywhere.com/)  
+[Try it here on PythonAnywhere](https://dellygzz.pythonanywhere.com/)
 _No setup required — just register and start tracking your books._
 
 
 
 ## Features:
 - Book Library Locator- Locate if a desired book is available for checkout in a local library
-- Book Recommendations- 
-- Book Purchase Options- 
+- Book Recommendations-
+- Book Purchase Options-
 - Book Search — Fetch titles, authors, and cover images using the Google Books API
 - Reading Log — Add, Read, and Delete books using a Flask and SQLite backend
 - Notion Export — Automatically export book details to a Notion database via the Notion API
@@ -27,22 +27,22 @@ _No setup required — just register and start tracking your books._
 
 ## Future Improvements:
 
-- Allow users to rate books and leave reflections directly in the app  
-- Add advanced filters (e.g., genre, author, publication year)    
-- Add visual previews on the home page so users can see features before logging in  
+- Allow users to rate books and leave reflections directly in the app
+- Add advanced filters (e.g., genre, author, publication year)
+- Add visual previews on the home page so users can see features before logging in
 - Simplify Notion export process with better user interface and step-by-step guidance
 
 ---
 
 ## Built With:
 
-- Python  
-- Flask  
-- SQLite  
-- HTML/CSS  
-- Google Books API  
+- Python
+- Flask
+- SQLite
+- HTML/CSS
+- Google Books API
 - Notion API
-- WorldCat/ OCLC 
+- WorldCat/ OCLC
 
 
 ---
