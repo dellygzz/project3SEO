@@ -2,6 +2,8 @@ import os
 import base64
 import requests
 from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import (
     init_database,
@@ -281,4 +283,4 @@ def add_notion():
 # =====================================================================
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5001)
