@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block main %}
+<h1>Dashboard</h1>
+<form action="{{ url_for('search') }}" method="get">
+  <div class="input-group mb-3 w-50 mx-auto">
+    <input type="text" name="q" class="form-control" placeholder="Book name" aria-label="Book name"
+      aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+  </div>
+</form>
+
+<h2>Your Reading List</h2>
+{% if books %}
+<table class="table w-auto mx-auto">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Author</th>
+      <th scope="col">Description</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr>
+      <th scope="row">{{ loop.index }}</th>
+      <td>{{ book["title"] }}</td>
+      <td>{{ book["author"] }}</td>
+      <td>{{ book["description"][:100] }}{% if book["description"]|length > 100 %}...{% endif %}</td>
+      <td>
+        <form method="POST" action="{{ url_for('remove_book') }}" class="d-inline">
+          <input type="hidden" name="google_book_id" value="{{ book['google_book_id'] }}">
+          <button type="submit" class="btn btn-danger btn-sm"
+            onclick="return confirm('Are you sure you want to remove this book?')">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="text-center">
+  <p>Your reading list is empty. Search for books to add them!</p>
+</div>
+{% endif %}
+
+{% if "access_token" in session %}
+<h3>Create Notion Database</h3>
+<form action="/create_notion" method="post">
+  <div class="input-group mb-3 w-50 mx-auto">
+    <select class="form-select" name="page_id" id="page_id" required>
+      <option value="" disabled selected>Select a Notion Page</option>
+      {% for page in pages %}
+      <option value="{{ page.id }}">{{ page.title }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-secondary" type="submit">Create</button>
+  </div>
+</form>
+
+<h3>Update Notion Database</h3>
+<form action="/add_notion" method="post">
+  <div class="input-group mb-3 w-50 mx-auto">
+    <select class="form-select" name="database_id" id="database_id" required>
+      <option value="" disabled selected>Select a Notion Database</option>
+      {% for db in databases %}
+      <option value="{{ db.id }}">{{ db.title }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-secondary" type="submit">Update</button>
+  </div>
+</form>
+{% else %}
+<a href="{{ url_for('notion_login') }}"><button class="btn btn-primary">Connect to Notion</button></a>
+{% endif %}
+{% endblock %}
