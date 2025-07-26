@@ -14,6 +14,59 @@ Dashboard
   </div>
 </form>
 
+
+
+
+
+<div class="amazon-search-section" style="margin-top: 3rem; position: relative; z-index: 1; background: none;">
+  <h2 class="results-header">Amazon Search Feature</h2>
+
+  <div class="search-container" style="max-width: 400px; margin: 0 auto 2rem; background: none;">
+    <p class="instructions" style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 1rem;">
+      Enter the title of a book below to search for it on Amazon. Click the link to view results.
+    </p>
+
+    <form method="POST" action="{{ url_for('dashboard') }}" style="display: flex; gap: 0.75rem;">
+      <input
+        type="text"
+        name="search_book_title"
+        placeholder="Search a book on Amazon"
+        value="{{ search_query or '' }}"
+        required
+        class="form-control mx-auto w-auto"
+        style="flex-grow: 1; padding: 0.5rem 1rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: white;"
+      />
+      <button
+        type="submit"
+        style="
+          background-color: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 0 1.5rem;
+          border-radius: var(--radius);
+          font-weight: 600;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        "
+        onmouseover="this.style.backgroundColor='var(--primary-hover)'"
+        onmouseout="this.style.backgroundColor='var(--primary-color)'"
+      >
+        Search
+      </button>
+    </form>
+
+    {% if amazon_search_url %}
+      <p class="result" style="margin-top: 1rem; font-size: 1rem; color: var(--primary-color);">
+        Search results: <a href="{{ amazon_search_url }}" target="_blank" rel="noopener noreferrer">View on Amazon</a>
+      </p>
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+
 <h2>Your Reading List</h2>
 {% if books %}
 <table class="table w-auto mx-auto">
@@ -49,6 +102,11 @@ Dashboard
   <p>Your reading list is empty. Search for books to add them!</p>
 </div>
 {% endif %}
+
+
+
+
+
 
 {% if "access_token" in session %}
 <h3>Create Notion Database</h3>
