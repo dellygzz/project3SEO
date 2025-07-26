@@ -21,6 +21,8 @@ from notion import (
 )
 
 
+
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
@@ -100,21 +102,34 @@ def logout():
 
 
 # ============== BOOK ROUTES ======================================
-@app.route("/dashboard")
+@app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
     books = get_user_books(session["user_id"])
-    token = session.get("access_token")
-    if not token:
-        return render_template("dashboard.html", books=books)
 
-    pages = get_user_pages(token)
-    databases = get_user_databases(token)
+    amazon_search_url = None
+    search_query = None
+
+    if request.method == "POST":
+        search_query = request.form.get("search_book_title", "").strip()
+        if search_query:
+            amazon_search_url = get_amazon_search_url(search_query)
+
     return render_template(
-        "dashboard.html", books=books, pages=pages, databases=databases
+        "dashboard.html",
+        books=books,
+        amazon_search_url=amazon_search_url,
+        search_query=search_query,
     )
+
+import urllib.parse
+
+def get_amazon_search_url(book_title: str) -> str:
+    query = urllib.parse.quote("book " + book_title)
+    return f"https://www.amazon.com/s?k={query}"
+
 
 
 @app.route("/search")
@@ -168,6 +183,9 @@ def remove_book():
     return redirect(request.referrer)
 
 
+
+
+
 # ====================================================================
 
 
@@ -216,6 +234,8 @@ def create_notion():
         flash("Error in creating Notion database", "error")
 
     return redirect(url_for("dashboard"))
+
+
 
 
 @app.route("/add_notion", methods=["POST"])
