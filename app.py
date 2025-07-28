@@ -182,7 +182,28 @@ def remove_book():
 
     return redirect(request.referrer)
 
+@app.route("/find_libraries", methods=["POST"])
+def find_libraries():
+    title = request.form.get("title")
+    zip_code = request.form.get("zip")  # get ZIP from form input
 
+    if not title or not zip_code:
+        flash("Please provide both book title and ZIP code.", "error")
+        return redirect(request.referrer or url_for("dashboard"))
+
+    books = search_book(title)
+    if not books:
+        flash("No books found with that title.", "error")
+        return redirect(request.referrer or url_for("dashboard"))
+
+    book = next((b for b in books if b.get("isbn")), None)
+    if not book:
+        flash("No books with a valid ISBN found.", "error")
+        return redirect(request.referrer or url_for("dashboard"))
+
+    isbn = book["isbn"]
+    worldcat_url = f"https://www.worldcat.org/isbn/{isbn}?loc={zip_code}"
+    return redirect(worldcat_url)
 
 
 
