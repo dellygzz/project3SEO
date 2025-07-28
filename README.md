@@ -6,7 +6,7 @@
 
 ## Live Demo:
 
-[Try it here on PythonAnywhere](https://booksync.pythonanywhere.com/)  
+[Try it here on PythonAnywhere](https://dellygzz.pythonanywhere.com/)  
 _No setup required — just register and start tracking your books._
 
 
