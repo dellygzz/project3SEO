@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recommended Books</title>
+</head>
+<body>
+  <h1>Book Recommendations</h1>
+
+  <form action="/recommend" method="get">
+    <input type="text" name="titles" placeholder="Enter titles (e.g. Dune,1984)" />
+    <button type="submit">Get Recommendations</button>
+  </form>
+
+  {% if books %}
+    <ul>
+      {% for book in books %}
+        <li>
+          <h3>{{ book.title }}</h3>
+          <p><strong>Authors:</strong> 
+            {% for author in book.authors %}
+              {{ author.name }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+          <img src="{{ book.image }}" alt="{{ book.title }}" width="100" />
+          <p><strong>Rating:</strong> {{ book.rating.average }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</body>
+</html>
