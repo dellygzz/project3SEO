@@ -3,6 +3,7 @@ import base64
 import requests
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from bigbook_api.book_api_client import search_books
 from database import (
     init_database,
     create_user,
@@ -287,7 +288,22 @@ def add_notion():
     return redirect(url_for("dashboard"))
 
 
-# =====================================================================
+@app.route("/recommend", methods=["GET"])
+def recommend():
+    if "user_id" not in session:
+        flash("You must be logged in to use the recommendation tool.", "error")
+        return redirect(url_for("login"))
+
+    titles = request.args.get("titles", "")
+    books = []
+
+    if titles:
+        title_list = [t.strip() for t in titles.split(",")]
+        for title in title_list:
+            books.extend(search_books(title))
+
+    return render_template("books.html", books=books)
+
 
 if __name__ == "__main__":
      app.run(port=5001, debug=True)

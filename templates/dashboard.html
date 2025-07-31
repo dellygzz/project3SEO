@@ -111,6 +111,31 @@ Dashboard
 {% endif %}
 
 
+<h2>Get Book Recommendations</h2>
+
+<form action="{{ url_for('recommend') }}" method="get">
+  <input type="text" name="titles" placeholder="Enter titles (e.g. Dune,1984)" />
+  <button type="submit">Get Recommendations</button>
+</form>
+
+{% if books %}
+  <h3>Recommended Books</h3>
+  <ul>
+    {% for book in books %}
+      <li>
+        <h4>{{ book.title }}</h4>
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        {% if book.cover %}
+          <img src="{{ book.cover }}" alt="{{ book.title }}" width="100" />
+        {% endif %}
+        <p><strong>Rating:</strong> {{ book.rating }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+{% elif books is defined %}
+  <p>No recommendations found.</p>
+{% endif %}
+
 
 
 
